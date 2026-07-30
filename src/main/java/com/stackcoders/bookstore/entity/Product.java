@@ -24,6 +24,9 @@ public class Product {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Column(name = "author", nullable = false)
+    private String author;
+
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 

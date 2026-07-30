@@ -10,7 +10,10 @@ public final class SecurityConstants {
 
     public static final String[] PUBLIC_ROUTES = {
             "/auth/register",
-            "/auth/login"
+            "/auth/login",
+            "/categories",
+            "/products",
+            "/products/**"
     };
 
     public static final String AUTH_HEADER = "Authorization";

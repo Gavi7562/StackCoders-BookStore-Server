@@ -63,8 +63,8 @@ public class AuthController {
      * client, preventing users from requesting someone else's profile.
      */
     @GetMapping("/me")
-    public ResponseEntity<UserResponse> getCurrentUser(Authentication authentication) {
+    public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser(Authentication authentication) {
         UserResponse response = userService.getCurrentUser(authentication.getName());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.success("Current user fetched successfully", response));
     }
 }

@@ -1,5 +1,6 @@
 package com.stackcoders.bookstore.controller;
 
+import com.stackcoders.bookstore.dto.response.ApiResponse;
 import com.stackcoders.bookstore.dto.response.UserResponse;
 import com.stackcoders.bookstore.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +33,8 @@ public class UserController {
      * user-management endpoints have a natural home alongside it.
      */
     @GetMapping("/me")
-    public ResponseEntity<UserResponse> getCurrentUser(Authentication authentication) {
+    public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser(Authentication authentication) {
         UserResponse response = userService.getCurrentUser(authentication.getName());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ApiResponse.success("Current user fetched successfully", response));
     }
 }

@@ -45,11 +45,20 @@ public class AuthServiceImpl implements AuthService {
             throw new DuplicateResourceException("An account with this email already exists");
         }
 
+        Role assignedRole = Role.USER;
+        if (request.getRole() != null && !request.getRole().isEmpty()) {
+            try {
+                assignedRole = Role.valueOf(request.getRole().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                // Ignore invalid roles and default to ordinary USER
+            }
+        }
+
         User user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
+                .role(assignedRole)
                 .build();
 
         userRepository.save(user);
