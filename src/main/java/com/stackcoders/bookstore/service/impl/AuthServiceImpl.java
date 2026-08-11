@@ -12,6 +12,7 @@ import com.stackcoders.bookstore.exception.InvalidTokenException;
 import com.stackcoders.bookstore.mapper.UserMapper;
 import com.stackcoders.bookstore.repository.JwtTokenRepository;
 import com.stackcoders.bookstore.repository.UserRepository;
+import com.stackcoders.bookstore.repository.AdminRepository;
 import com.stackcoders.bookstore.security.jwt.JwtService;
 import com.stackcoders.bookstore.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ import java.time.ZoneId;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
+    private final AdminRepository adminRepository;
     private final JwtTokenRepository jwtTokenRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
@@ -69,8 +71,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public AuthResponse login(LoginRequest request) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new InvalidTokenException("User not found"));
@@ -83,6 +84,37 @@ public class AuthServiceImpl implements AuthService {
         return AuthResponse.builder()
                 .token(jwt)
                 .user(userMapper.toAuthUserSummary(user))
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public AuthResponse adminLogin(LoginRequest request) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+
+        com.stackcoders.bookstore.entity.Admin admin = adminRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new InvalidTokenException("Admin not found"));
+
+        if (admin.getRole() != Role.ADMIN) {
+            throw new org.springframework.security.access.AccessDeniedException(
+                    "Access Denied: Only Admins can login here");
+        }
+
+        String jwt = jwtService.generateToken(admin);
+        persistToken(admin.getAdminId(), jwt);
+
+        log.info("Admin logged in: {}", admin.getEmail());
+
+        AuthResponse.AuthUserSummary summary = new AuthResponse.AuthUserSummary();
+        summary.setId(admin.getAdminId());
+        summary.setUsername(admin.getUsername());
+        summary.setEmail(admin.getEmail());
+        summary.setRole(admin.getRole().name());
+
+        return AuthResponse.builder()
+                .token(jwt)
+                .user(summary)
                 .build();
     }
 
@@ -134,8 +166,7 @@ public class AuthServiceImpl implements AuthService {
     private void persistToken(Long userId, String jwt) {
         LocalDateTime expiresAt = LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(System.currentTimeMillis() + jwtService.getAccessTokenExpirationMs()),
-                ZoneId.systemDefault()
-        );
+                ZoneId.systemDefault());
 
         JwtToken tokenEntity = JwtToken.builder()
                 .userId(userId)

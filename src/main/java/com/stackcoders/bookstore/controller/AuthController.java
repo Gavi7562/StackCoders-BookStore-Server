@@ -62,6 +62,7 @@ public class AuthController {
      * principal set by JwtAuthenticationFilter - no ID is taken from the
      * client, preventing users from requesting someone else's profile.
      */
+    
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserResponse>> getCurrentUser(Authentication authentication) {
         UserResponse response = userService.getCurrentUser(authentication.getName());

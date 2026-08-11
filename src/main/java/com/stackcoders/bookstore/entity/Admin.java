@@ -12,18 +12,18 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(name = "admins")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User implements UserDetails {
+public class Admin implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+    @Column(name = "admin_id")
+    private Long adminId;
 
     @Column(name = "username", nullable = false)
     private String username;
@@ -32,7 +32,6 @@ public class User implements UserDetails {
     private String email;
 
     @Column(name = "password", nullable = false)
-    @com.fasterxml.jackson.annotation.JsonIgnore
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -49,6 +48,9 @@ public class User implements UserDetails {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        if (this.role == null) {
+            this.role = Role.ADMIN;
+        }
     }
 
     @PreUpdate

@@ -1,0 +1,8 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< com.stackcoders:bookstore >----------------------
+[INFO] Building bookstore 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.3.4:run (default-cli) > test-compile @ bookstore >>>

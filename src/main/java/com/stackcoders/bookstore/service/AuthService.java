@@ -10,6 +10,8 @@ public interface AuthService {
 
     AuthResponse login(LoginRequest request);
 
+    AuthResponse adminLogin(LoginRequest request);
+
     void logout(String bearerToken);
 
     AuthResponse refresh(String bearerToken);
